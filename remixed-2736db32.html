@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG EAPCET Web Options Finder | Amr.Sec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#0a0a0f;--surface:#111118;--card:#16161f;--border:#22222f;
+    --accent:#00ff88;--accent2:#0af;--text:#e8e8f0;--muted:#666680;--danger:#ff4466;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:24px 16px 60px;}
+  .header{text-align:center;padding:36px 0 28px;}
+  .brand{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .brand::before,.brand::after{content:'';width:32px;height:1px;background:var(--accent);opacity:0.4;}
+  h1{font-size:clamp(20px,5vw,30px);font-weight:700;line-height:1.2;margin-bottom:8px;}
+  h1 span{color:var(--accent);}
+  .subtitle{font-size:12px;color:var(--muted);line-height:1.6;}
+  .section-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+  .input-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+  @media(max-width:520px){.grid2{grid-template-columns:1fr;}.grid3{grid-template-columns:1fr 1fr;}}
+  select,input[type="number"]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;padding:12px 14px;outline:none;transition:border-color 0.2s;cursor:pointer;-webkit-appearance:none;appearance:none;}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300ff88' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+  select:focus,input[type="number"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,255,136,0.08);}
+  select option{background:#16161f;color:var(--text);}
+  input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;}
+  input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
+  input[type="number"]::placeholder{color:var(--muted);font-size:13px;}
+  .btn{width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;padding:14px;cursor:pointer;transition:all 0.15s;letter-spacing:0.5px;}
+  .btn:hover{background:#00e87a;transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .hint{font-size:11px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace;}
+  #result{display:none;margin-top:20px;}
+  .rank-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);border-radius:8px;padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:14px;flex-wrap:wrap;}
+  .result-title{font-size:17px;font-weight:700;margin-bottom:5px;}
+  .result-desc{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5;}
+  .colleges-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+  .colleges-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .colleges-header span{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+  .count-badge{background:rgba(0,255,136,0.1);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;}
+  .college-item{display:grid;grid-template-columns:28px 1fr auto auto;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);transition:background 0.15s;}
+  .college-item:last-child{border-bottom:none;}
+  .college-item:hover{background:rgba(255,255,255,0.02);}
+  .rank-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);opacity:0.6;}
+  .college-name{font-size:13px;font-weight:500;color:var(--text);}
+  .cutoff-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;white-space:nowrap;}
+  .co-safe{background:rgba(0,255,136,0.12);color:#00ff88;border:1px solid rgba(0,255,136,0.3);}
+  .co-mod{background:rgba(0,170,255,0.12);color:#0af;border:1px solid rgba(0,170,255,0.3);}
+  .co-risky{background:rgba(255,153,0,0.12);color:#f90;border:1px solid rgba(255,153,0,0.3);}
+  .co-danger{background:rgba(255,68,102,0.12);color:#f44;border:1px solid rgba(255,68,102,0.3);}
+  .tier-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .tier-1{background:#00ff88;}.tier-2{background:#0af;}.tier-3{background:#f90;}.tier-4{background:#f44;}
+  .tier-legend{display:flex;gap:14px;flex-wrap:wrap;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+  .disclaimer{padding:14px 16px;background:rgba(255,68,102,0.06);border:1px solid rgba(255,68,102,0.2);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+  .disclaimer strong{color:var(--danger);}
+  .email-link-box{background:var(--card);border:1px solid rgba(0,255,136,0.3);border-radius:12px;padding:18px 20px;margin-bottom:18px;}
+  .email-link-box .el-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .email-link-box a{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);border-radius:8px;padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);text-decoration:none;font-weight:700;transition:all 0.15s;}
+  .email-link-box a:hover{background:rgba(0,255,136,0.2);transform:translateY(-1px);}
+  .footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--border);}
+  .footer-brand{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--muted);}
+  #result{scroll-margin-top:20px;}
+  .no-result{text-align:center;padding:28px 20px;color:var(--muted);font-size:14px;}
+  .castinfo-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .castinfo-tag{background:rgba(0,170,255,0.1);border:1px solid rgba(0,170,255,0.25);border-radius:6px;padding:4px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#0af;}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="brand">AMR.SEC × CYMER</div>
+    <h1>TG EAPCET <span>Web Options</span> Finder 2025</h1>
+    <p class="subtitle">Select your caste, course & rank → Instant college list with cutoffs<br>All Categories | All CSE Branches | Based on 2025 Closing Ranks</p>
+  </div>
+
+  <div class="input-section">
+    <div class="grid2">
+      <div>
+        <div class="section-label">Caste / Category</div>
+        <select id="casteSelect">
+          <option value="">-- Select Caste --</option>
+          <optgroup label="Open Category">
+            <option value="OC">OC — Open Category</option>
+          </optgroup>
+          <optgroup label="BC (Backward Classes)">
+            <option value="BC_A">BC-A</option>
+            <option value="BC_B">BC-B</option>
+            <option value="BC_C">BC-C</option>
+            <option value="BC_D">BC-D</option>
+            <option value="BC_E">BC-E</option>
+          </optgroup>
+          <optgroup label="SC/ST">
+            <option value="SC">SC — Scheduled Caste</option>
+            <option value="ST">ST — Scheduled Tribe</option>
+          </optgroup>
+          <optgroup label="Special Categories">
+            <option value="EWS">EWS — Economically Weaker Section</option>
+            <option value="PH">PH — Physically Handicapped</option>
+            <option value="NCC">NCC</option>
+            <option value="CAP">CAP — Children of Armed Personnel</option>
+            <option value="Sports">Sports Quota</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <div class="section-label">Course / Branch</div>
+        <select id="courseSelect">
+          <option value="">-- Select Course --</option>
+          <optgroup label="Core CS Branches">
+            <option value="CSE">CSE — Computer Science & Engineering</option>
+            <option value="IT">IT — Information Technology</option>
+            <option value="CSM">CSM — CS (Machine Learning)</option>
+            <option value="AIML">AIML — AI & Machine Learning</option>
+            <option value="DS">DS — Data Science</option>
+            <option value="CSD">CSD — CS (Data Science)</option>
+            <option value="AIDS">AIDS — AI & Data Science</option>
+            <option value="CSBS">CSBS — CS & Business Systems</option>
+            <option value="IOT">IoT — Internet of Things</option>
+            <option value="Cyber">Cyber Security</option>
+          </optgroup>
+          <optgroup label="ECE / EEE">
+            <option value="ECE">ECE — Electronics & Communication</option>
+            <option value="EEE">EEE — Electrical & Electronics</option>
+            <option value="EIE">EIE — Electronics & Instrumentation</option>
+          </optgroup>
+          <optgroup label="Mechanical / Civil">
+            <option value="MECH">MECH — Mechanical Engineering</option>
+            <option value="CIVIL">CIVIL — Civil Engineering</option>
+          </optgroup>
+          <optgroup label="Chemical / Bio">
+            <option value="CHEM">CHEM — Chemical Engineering</option>
+            <option value="BIO">Biotechnology</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <div class="grid2" style="margin-bottom:14px;">
+      <div>
+        <div class="section-label">Your TG EAPCET Rank</div>
+        <input type="number" id="rankInput" placeholder="e.g. 10000" min="1" max="300000" />
+      </div>
+      <div>
+        <div class="section-label">Gender</div>
+        <select id="genderSelect">
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" onclick="findColleges()">🔍 Find My College Options →</button>
+    <div class="hint">// All categories supported · Cutoffs adjusted per caste</div>
+  </div>
+
+  <!-- Tier legend always visible -->
+  <div class="tier-legend">
+    <div class="legend-item"><div class="tier-dot tier-1"></div> Govt / Premium Private</div>
+    <div class="legend-item"><div class="tier-dot tier-2"></div> Strong Private</div>
+    <div class="legend-item"><div class="tier-dot tier-3"></div> Good Option</div>
+    <div class="legend-item"><div class="tier-dot tier-4"></div> Safe / Backup</div>
+    <div class="legend-item" style="margin-left:auto;font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:11px;">SAFE · MOD · RISKY · STRETCH</div>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="footer">
+    <div class="footer-brand">CYMER, out.</div>
+    <div class="footer-sub">Content by Amr.Sec — YouTube & Instagram for Engineering Students in Hyderabad</div>
+  </div>
+
+</div>
+
+<script>
+// ─── Caste rank multiplier (SC/ST/BC get higher closing ranks = easier to get in) ───
+const casteMultiplier = {
+  OC: 1.0, EWS: 1.15,
+  BC_A: 1.8, BC_B: 1.7, BC_C: 2.0, BC_D: 1.9, BC_E: 2.2,
+  SC: 2.8, ST: 3.5,
+  PH: 3.0, NCC: 2.5, CAP: 2.3, Sports: 2.0
+};
+
+// ─── Course demand factor (higher demand = lower closing rank) ───
+const courseFactor = {
+  CSE:1.0, AIML:1.05, CSM:1.08, DS:1.1, CSD:1.1, AIDS:1.12,
+  IT:1.15, CSBS:1.2, IOT:1.25, Cyber:1.2,
+  ECE:1.4, EEE:1.6, EIE:1.7,
+  MECH:1.8, CIVIL:1.9, CHEM:2.0, BIO:2.2
+};
+
+const casteLabelMap = {
+  OC:"OC",EWS:"EWS",BC_A:"BC-A",BC_B:"BC-B",BC_C:"BC-C",BC_D:"BC-D",BC_E:"BC-E",
+  SC:"SC",ST:"ST",PH:"PH",NCC:"NCC",CAP:"CAP",Sports:"Sports"
+};
+
+// ─── Base OC CSE college data ───
+const colleges = [
+  {name:"JNTUH UCEH",tier:1,baseMax:800},
+  {name:"OU College of Engineering",tier:1,baseMax:900},
+  {name:"CBIT",tier:1,baseMax:1200},
+  {name:"VNR VJIET",tier:1,baseMax:1500},
+  {name:"Vasavi College of Engineering",tier:1,baseMax:1800},
+  {name:"GRIET",tier:2,baseMax:2500},
+  {name:"CVR College of Engineering",tier:2,baseMax:3000},
+  {name:"MGIT",tier:2,baseMax:3200},
+  {name:"KMIT",tier:2,baseMax:3500},
+  {name:"MVSR Engineering College",tier:2,baseMax:4000},
+  {name:"SNIST",tier:2,baseMax:4500},
+  {name:"Anurag University",tier:2,baseMax:5000},
+  {name:"BVRIT",tier:3,baseMax:6000},
+  {name:"MLRIT",tier:3,baseMax:7000},
+  {name:"GNITC",tier:3,baseMax:7500},
+  {name:"CMR CET",tier:3,baseMax:8000},
+  {name:"MRCET",tier:3,baseMax:8500},
+  {name:"IARE",tier:3,baseMax:9000},
+  {name:"ACE Engineering College",tier:3,baseMax:9500},
+  {name:"CMRIT",tier:3,baseMax:10000},
+  {name:"Vardhaman College of Engineering",tier:4,baseMax:12000},
+  {name:"HITAM",tier:4,baseMax:13000},
+  {name:"VBIT",tier:4,baseMax:14000},
+  {name:"TKR College",tier:4,baseMax:14500},
+  {name:"Sreenidhi Institute",tier:4,baseMax:15000},
+  {name:"Guru Nanak Institutions",tier:4,baseMax:15500},
+  {name:"Methodist College of Engineering",tier:4,baseMax:16000},
+  {name:"Neil Gogte Institute",tier:4,baseMax:17000},
+  {name:"Sphoorthy Engineering College",tier:4,baseMax:18000},
+  {name:"CMR Engineering College",tier:4,baseMax:18500},
+  {name:"MREC",tier:4,baseMax:19000},
+  {name:"Lords Institute",tier:4,baseMax:20000},
+  {name:"Sreyas Institute",tier:4,baseMax:21000},
+  {name:"KG Reddy College",tier:4,baseMax:22000},
+  {name:"St. Martin's Engineering College",tier:4,baseMax:23000},
+  {name:"SVIT",tier:4,baseMax:24000},
+  {name:"MLRITM",tier:4,baseMax:25000},
+  {name:"Malla Reddy Engineering College",tier:4,baseMax:26000},
+  {name:"Vignan Institute of Technology & Science",tier:4,baseMax:27000},
+  {name:"JBIT",tier:4,baseMax:28000},
+  {name:"Holy Mary Institute",tier:4,baseMax:30000},
+  {name:"AVN Institute",tier:4,baseMax:32000},
+  {name:"Sri Indu College",tier:4,baseMax:35000},
+  {name:"Ellenki College",tier:4,baseMax:38000},
+  {name:"Scient Institute",tier:4,baseMax:40000},
+  {name:"MIST",tier:4,baseMax:42000},
+  {name:"Pallavi Engineering College",tier:4,baseMax:45000},
+  {name:"Aurora Group",tier:4,baseMax:48000},
+  {name:"Mahaveer Institute",tier:4,baseMax:50000},
+  {name:"Vaageswari College",tier:4,baseMax:55000},
+  {name:"Balaji Institute",tier:4,baseMax:60000},
+  {name:"St. Mary's Engineering College",tier:4,baseMax:65000},
+  {name:"Annamacharya Institute",tier:4,baseMax:70000},
+  {name:"Siddhartha Institute",tier:4,baseMax:80000},
+  {name:"Local Private Colleges (Vacancy)",tier:4,baseMax:150000},
+];
+
+function getCutoffLabel(adjRank, collegeMax) {
+  const ratio = adjRank / collegeMax;
+  if(ratio <= 0.7) return {label:"SAFE",cls:"co-safe"};
+  if(ratio <= 0.9) return {label:"MODERATE",cls:"co-mod"};
+  if(ratio <= 1.05) return {label:"RISKY",cls:"co-risky"};
+  return {label:"STRETCH",cls:"co-danger"};
+}
+
+function getCollegeClosingRank(col, cm, cf) {
+  return Math.round(col.baseMax * cm * cf);
+}
+
+function findColleges() {
+  const rank = parseInt(document.getElementById('rankInput').value);
+  const caste = document.getElementById('casteSelect').value;
+  const course = document.getElementById('courseSelect').value;
+  const gender = document.getElementById('genderSelect').value;
+  const resultDiv = document.getElementById('result');
+
+  if(!rank || rank < 1) { alert("Please enter a valid rank."); return; }
+  if(!caste) { alert("Please select your caste/category."); return; }
+  if(!course) { alert("Please select a course/branch."); return; }
+
+  const cm = casteMultiplier[caste] || 1.0;
+  const cf = courseFactor[course] || 1.0;
+
+  // Filter colleges where student's rank <= adjusted closing rank (they qualify)
+  const eligible = colleges.filter(c => {
+    const adjMax = getCollegeClosingRank(c, cm, cf);
+    return rank <= adjMax;
+  });
+
+  // Sort: closest cutoff first (most competitive first)
+  eligible.sort((a,b) => {
+    const aMax = getCollegeClosingRank(a,cm,cf);
+    const bMax = getCollegeClosingRank(b,cm,cf);
+    return aMax - bMax;
+  });
+
+  const casteLabel = casteLabelMap[caste] || caste;
+  const genderLabel = gender === 'F' ? 'Female' : 'Male';
+
+  // Build email subject & body
+  const emailSubject = encodeURIComponent(`AMRSecCollege Predicted — TG EAPCET 2025 Web Options`);
+  const emailBody = encodeURIComponent(
+`TG EAPCET 2025 – Predicted College List
+Generated by AMR.Sec Web Options Finder
+
+Student Details:
+  Rank    : ${rank.toLocaleString('en-IN')}
+  Category: ${casteLabel}
+  Course  : ${course}
+  Gender  : ${genderLabel}
+
+Eligible Colleges (${eligible.length} found):
+${eligible.map((c,i)=>{
+  const adjMax = getCollegeClosingRank(c,cm,cf);
+  const cut = getCutoffLabel(rank, adjMax);
+  return `${String(i+1).padStart(2,'0')}. ${c.name} | Closing Rank ~${adjMax.toLocaleString('en-IN')} | ${cut.label}`;
+}).join('\n')}
+
+Disclaimer: Cutoffs are estimated based on 2025 trends. Verify at tgeapcet.nic.in.
+Powered by AMR.Sec — amrsec.in`
+  );
+
+  const mailtoLink = `mailto:?subject=${emailSubject}&body=${emailBody}`;
+
+  if(eligible.length === 0) {
+    resultDiv.innerHTML = `
+      <div class="no-result">
+        <div style="font-size:28px;margin-bottom:10px;">😬</div>
+        <div style="color:var(--text);font-weight:600;margin-bottom:6px;">No colleges found for Rank ${rank.toLocaleString('en-IN')} | ${casteLabel} | ${course}</div>
+        <div style="font-size:12px;">Your rank might be beyond the closing rank range for this combination.<br>Try switching to a different branch or check vacancy seats directly at tgeapcet.nic.in.</div>
+      </div>`;
+    resultDiv.style.display = 'block';
+    return;
+  }
+
+  const rows = eligible.map((c,i) => {
+    const adjMax = getCollegeClosingRank(c,cm,cf);
+    const cut = getCutoffLabel(rank, adjMax);
+    return `
+      <div class="college-item">
+        <span class="rank-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="college-name">${c.name}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">~${adjMax.toLocaleString('en-IN')}</span>
+        <span class="cutoff-tag ${cut.cls}">${cut.label}</span>
+      </div>`;
+  }).join('');
+
+  resultDiv.innerHTML = `
+    <div class="rank-badge">
+      📊 Rank ${rank.toLocaleString('en-IN')} &nbsp;|&nbsp; ${casteLabel} &nbsp;|&nbsp; ${course} &nbsp;|&nbsp; ${genderLabel}
+    </div>
+    <div class="result-title">Your Eligible College Options</div>
+    <div class="result-desc">
+      Found <strong style="color:var(--accent)">${eligible.length} colleges</strong> where your rank qualifies.
+      Closing ranks are estimated for <strong style="color:#0af">${casteLabel} category · ${course} branch · 2025</strong>.
+    </div>
+
+    <div class="colleges-card">
+      <div class="colleges-header">
+        <span>Colleges — Priority Order</span>
+        <span class="count-badge">${eligible.length} options</span>
+      </div>
+      ${rows}
+    </div>
+
+    <div class="email-link-box">
+      <div class="el-title">📧 AMRSecCollege Predicted — Email This List</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Opens your mail app with the full predicted college list pre-filled. Subject: <em>AMRSecCollege Predicted</em></p>
+      <a href="${mailtoLink}">✉️ Open in Mail App → AMRSecCollege Predicted</a>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ Disclaimer:</strong> Closing ranks are estimated based on 2025 trends and caste/course multipliers.
+      Actual cutoffs vary each year based on competition, seat matrix, and reservation policies.
+      Always verify at <strong>tgeapcet.nic.in</strong>. Fill minimum <strong>100 options</strong> for best allotment.
+    </div>
+  `;
+
+  resultDiv.style.display = 'block';
+  resultDiv.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('rankInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') findColleges();
+});
+</script>
+</body>
+</html>
